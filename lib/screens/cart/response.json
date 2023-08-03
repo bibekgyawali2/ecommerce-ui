@@ -1,0 +1,29 @@
+{
+  "cartItems": [
+    {
+      "id": 1,
+      "productId": "ABC123",
+      "name": "Product 1",
+      "price": 19.99,
+      "quantity": 2,
+      "imageUrl": "https://example.com/images/product1.jpg"
+    },
+    {
+      "id": 2,
+      "productId": "DEF456",
+      "name": "Product 2",
+      "price": 29.99,
+      "quantity": 1,
+      "imageUrl": "https://example.com/images/product2.jpg"
+    },
+    {
+      "id": 3,
+      "productId": "GHI789",
+      "name": "Product 3",
+      "price": 9.99,
+      "quantity": 4,
+      "imageUrl": "https://example.com/images/product3.jpg"
+    }
+  ],
+  "totalAmount": 119.95
+}
