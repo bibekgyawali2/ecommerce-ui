@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:food/modals/product_modals.dart';
+import 'package:food/repository/api_service/api_service.dart';
 
 import '../../utils/colors.dart';
 import '../../utils/dimensions.dart';
@@ -203,8 +204,12 @@ class PopularFoodDetail extends StatelessWidget {
               ),
             ),
             GestureDetector(
-              onTap: () {
+              onTap: () async {
                 //   addItem(product);
+                var a = await ApiServices().addOrder(products);
+                if (a) {
+                  print('Successfully Added to Cart');
+                }
               },
               child: Container(
                 padding: EdgeInsets.only(

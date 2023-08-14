@@ -3,7 +3,7 @@ class ProductsModel {
   String? name;
   String? price;
   String? description;
-  String? stars;
+  int? stars;
   String? img;
   String? location;
   int? typeId;

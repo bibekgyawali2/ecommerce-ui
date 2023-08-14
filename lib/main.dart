@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food/cubits/product_cubit/products_cubit.dart';
+import 'package:food/screens/auth/sign_in_page.dart';
+import 'package:food/screens/auth/sign_up_page.dart';
+import 'package:food/screens/home/food_page_body.dart';
+import 'package:food/screens/home/home_page.dart';
 import 'package:food/screens/home/main_food_page.dart';
 import 'package:food/screens/splash/splash_page.dart';
 import 'package:get/get.dart';
@@ -27,7 +31,7 @@ class MyApp extends StatelessWidget {
     return const GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      home: SplashScreen(),
+      home: HomePage(),
     );
   }
 }
