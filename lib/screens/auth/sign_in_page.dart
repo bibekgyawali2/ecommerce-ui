@@ -1,14 +1,22 @@
 import 'dart:io';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:food/repository/api_service/api_service.dart';
+import 'package:food/screens/auth/sign_up_page.dart';
+import 'package:food/screens/home/home_page.dart';
 import '../../utils/colors.dart';
 import '../../utils/dimensions.dart';
 import '../../widget/app_text_feild.dart';
 import '../../widget/big_text.dart';
 
-class SignInPage extends StatelessWidget {
+class SignInPage extends StatefulWidget {
   const SignInPage({Key? key}) : super(key: key);
 
+  @override
+  State<SignInPage> createState() => _SignInPageState();
+}
+
+class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     var emailController = TextEditingController();
@@ -26,7 +34,7 @@ class SignInPage extends StatelessWidget {
             // app logo
             Container(
               height: Dimensions.screenHeight * 0.25,
-              child: Center(
+              child: const Center(
                 child: CircleAvatar(
                   backgroundColor: Colors.white,
                   radius: 80,
@@ -94,8 +102,18 @@ class SignInPage extends StatelessWidget {
             SizedBox(height: Dimensions.screenHeight * 0.05),
             // sign up
             GestureDetector(
-              onTap: () {
+              onTap: () async {
                 // Handle sign-in logic here
+                bool a = await ApiServices()
+                    .login(emailController.text, passwordController.text);
+                if (a) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => HomePage(),
+                    ),
+                  );
+                }
               },
               child: Container(
                 width: Dimensions.screenWidth / 2,
@@ -133,12 +151,12 @@ class SignInPage extends StatelessWidget {
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
                         // Navigate to the sign-up page
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (context) => SignUpPage(),
-                        //   ),
-                        // );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SignUpPage(),
+                          ),
+                        );
                       },
                   ),
                 ],
