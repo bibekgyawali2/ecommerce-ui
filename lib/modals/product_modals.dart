@@ -3,10 +3,11 @@ class ProductsModel {
   String? name;
   String? price;
   String? description;
-  int? stars;
+  double? stars;
   String? img;
   String? location;
   int? typeId;
+  int? quantity;
 
   ProductsModel({
     this.id,

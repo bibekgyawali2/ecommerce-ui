@@ -206,7 +206,7 @@ class PopularFoodDetail extends StatelessWidget {
             GestureDetector(
               onTap: () async {
                 //   addItem(product);
-                bool success = await ApiServices().addOrder(products);
+                bool success = await ApiServices().addToCart(products);
               },
               child: Container(
                 padding: EdgeInsets.only(
