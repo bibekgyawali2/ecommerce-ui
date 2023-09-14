@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food/repository/api_service/api_service.dart';
-import 'package:khalti_flutter/khalti_flutter.dart';
+import 'package:food/screens/khalti/khalti.dart';
 import '../../cubits/cubit/cart_cubit.dart';
 import '../../modals/cart.dart';
 import '../../utils/colors.dart';
@@ -22,20 +22,6 @@ class CartPage extends StatelessWidget {
     return total;
   }
 
-  final config = PaymentConfig(
-    amount: 10000, // Amount should be in paisa
-    productIdentity: 'dell-g5-g5510-2021',
-    productName: 'Dell G5 G5510 2021',
-    productUrl: 'https://www.khalti.com/#/bazaar',
-    additionalData: {
-      // Not mandatory; can be used for reporting purpose
-      'vendor': 'Khalti Bazaar',
-    },
-    mobile:
-        '9800000001', // Not mandatory; can be used to fill mobile number field
-    mobileReadOnly: false, // Not mandatory; makes the mobile field not editable
-  );
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,43 +31,46 @@ class CartPage extends StatelessWidget {
             return Stack(
               children: [
                 Positioned(
-                  top: Dimensions.height20 * 3,
+                  top: Dimensions.height20 * 1,
                   left: Dimensions.width20,
                   right: Dimensions.width20,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      AppIcon(
-                        icon: Icons.arrow_back_ios,
-                        iconColor: Colors.white,
-                        backgroundColor: AppColors.mainColor,
-                        iconSize: Dimensions.iconSize24,
-                      ),
-                      SizedBox(
-                        width: Dimensions.width20 * 5,
-                      ),
                       GestureDetector(
                         onTap: () {
-                          //Get.toNamed(RouteHelper.getInitial());
+                          Navigator.pop(context);
                         },
                         child: AppIcon(
-                          icon: Icons.home_outlined,
+                          icon: Icons.arrow_back_ios,
                           iconColor: Colors.white,
                           backgroundColor: AppColors.mainColor,
                           iconSize: Dimensions.iconSize24,
                         ),
                       ),
-                      AppIcon(
-                        icon: Icons.shopping_cart,
-                        iconColor: Colors.white,
-                        backgroundColor: AppColors.mainColor,
-                        iconSize: Dimensions.iconSize24,
-                      )
+                      // SizedBox(
+                      //   width: Dimensions.width20 * 5,
+                      // ),
+                      // GestureDetector(
+                      //   onTap: () {},
+                      //   child: AppIcon(
+                      //     icon: Icons.home_outlined,
+                      //     iconColor: Colors.white,
+                      //     backgroundColor: AppColors.mainColor,
+                      //     iconSize: Dimensions.iconSize24,
+                      //   ),
+                      // ),
+                      // AppIcon(
+                      //   icon: Icons.shopping_cart,
+                      //   iconColor: Colors.white,
+                      //   backgroundColor: AppColors.mainColor,
+                      //   iconSize: Dimensions.iconSize24,
+                      // )
                     ],
                   ),
                 ),
                 Positioned(
-                  top: Dimensions.height20 * 5,
+                  top: Dimensions.height20 * 3,
                   left: Dimensions.width20,
                   right: Dimensions.width20,
                   bottom: 0,
@@ -275,15 +264,24 @@ class CartPage extends StatelessWidget {
       ),
       bottomNavigationBar: GestureDetector(
         onTap: () async {
+          // Navigator.push(
+          // context,
+          // MaterialPageRoute(
+          //   builder: (context) => KhaltiExampleApp(),
+          // ),
+          // );
           List<Cart> cartItems =
               (BlocProvider.of<CartCubit>(context).state as CartFetched).cart;
+          List<int> ids = [];
           String name = "";
-          double price = 0;
+          double price = 0.0;
           String img = "";
           int totalQuantity = 0;
           String product = "";
           String time = "";
           for (var item in cartItems) {
+            var a = item.id;
+            ids.add(a!);
             name += item.product ?? ""; // Concatenate product name
             double itemPrice = double.tryParse(item.price ?? "0") ?? 0;
             int itemQuantity = item.quantity ?? 0; // No need for conversion
@@ -307,11 +305,10 @@ class CartPage extends StatelessWidget {
           // Now you can call the API with the concatenated values
           bool orderStatus = await ApiServices().addOrder(
             name: 'user name',
-            price: price.toDouble(),
-            img: img,
+            price: price,
             quantity: totalQuantity,
-            product: name,
-            time: 2.2,
+            product: ids,
+            time: DateTime.now(),
           );
           print(orderStatus);
         },

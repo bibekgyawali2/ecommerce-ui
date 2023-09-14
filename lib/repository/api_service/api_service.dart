@@ -5,14 +5,18 @@ import 'package:food/modals/product_modals.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 
+import '../../modals/order.dart';
+
 String BASE_URL =
-    'https://21f9-2400-1a00-bd20-d7f9-3197-de63-1c3b-de9a.ngrok-free.app';
+    'https://0ddb-2400-1a00-bd20-f1b2-71af-6e42-5e25-2e2c.ngrok-free.app';
 
 String PopularProduct = BASE_URL + '/api/viewproducts_details';
 String AddToCart = BASE_URL + '/api/addcart_details';
-String MAKE_ORDER = BASE_URL + '/api/addorder_details';
+String MAKE_ORDER = BASE_URL + '/api/create-order';
 String sign_in = BASE_URL + '/api/login';
 String get_cart = BASE_URL + '/api/cart_details';
+String get_order = BASE_URL + '/api/individualUserOrders';
+String top_selling = BASE_URL = '/topSellingProduct';
 
 class ApiServices {
   Dio _dio = Dio();
@@ -33,6 +37,31 @@ class ApiServices {
       });
 
       final response = await _dio.get(PopularProduct, options: options);
+      final list = List<ProductsModel>.from(
+          response.data.map((x) => ProductsModel.fromMap(x)));
+      return list;
+    } catch (e) {
+      print(e);
+      throw Exception(e);
+    }
+  }
+
+  Future<List<ProductsModel>> topSelling() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+      // if (token == null) {
+      //   throw Exception("Token not found");
+      // }
+
+      final options = Options(headers: {
+        "ngrok-skip-browser-warning": "69420",
+        "accept": "application/json",
+        "Authorization": "Bearer $token", // Add bearer token
+      });
+
+      final response = await _dio.get(top_selling, options: options);
       final list = List<ProductsModel>.from(
           response.data.map((x) => ProductsModel.fromMap(x)));
       return list;
@@ -111,51 +140,62 @@ class ApiServices {
   Future<bool> addOrder({
     required String name,
     required double price,
-    required String img,
     required int quantity,
-    required String product,
-    required double time,
+    required List<int> product,
+    required DateTime time,
   }) async {
-    // try {
-    final headers = {
-      'accept': 'application/json',
-      "ngrok-skip-browser-warning": "69420",
-    };
-    final Map<String, dynamic> requestBody = {
-      "name": name,
-      "price": price,
-      "img":
-          'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=880&q=80',
-      "quantity": quantity,
-      "isExist": 'true',
-      "product": product,
-      "status": 'order-placed',
-      "time": time,
-    };
-    final response = await http.post(
-      Uri.parse(MAKE_ORDER), // Convert the URL to a Uri object
-      headers: headers,
-      body: requestBody,
-    );
+    try {
+      final dio = Dio();
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
 
-    print(response);
-    if (response.statusCode == 200) {
-      // Successful order placement
-      return true;
-    } else {
-      // Order placement failed
-      return false;
+      final options = BaseOptions(
+        baseUrl: MAKE_ORDER, // Replace with your API base URL
+        headers: {
+          'accept': 'application/json',
+          "ngrok-skip-browser-warning": "69420",
+          "Authorization": "Bearer $token",
+        },
+      );
+
+      final dioInstance = Dio(options);
+
+      final Map<String, dynamic> requestBody = {
+        "name": name,
+        "price": price,
+        "quantity": quantity,
+        "isExist": true, // Use boolean value instead of string 'true'
+        "product": product,
+        "status": 'order-placed', // Modify as needed
+        "time": 2.2, // Convert DateTime to string
+      };
+
+      final response = await dioInstance.post(
+        MAKE_ORDER, // Replace with your specific endpoint
+        data: requestBody,
+      );
+
+      if (response.statusCode == 200) {
+        // Successful order placement
+        print(response.data);
+        return true;
+      } else {
+        // Order placement failed
+        return false;
+      }
+    } catch (e) {
+      print(e);
+      throw Exception(e);
     }
-    // } catch (e) {
-    //print(e);
-    // throw Exception(e);
-    // }
   }
 
   Future<bool> login(String email, String password) async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
       final headers = {
         'accept': 'application/json',
+        // "Authorization": "Bearer $token",
       };
       final requestBody = {
         "email": email,
@@ -175,6 +215,11 @@ class ApiServices {
         // Store the token in shared preferences
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
+        await prefs.setString('name', a['user']['name']);
+        print(a['user']['name']);
+        print(a['user']['email']);
+        print(token);
+        await prefs.setString('email', a['user']['email']);
         return true;
       } else {
         // Sign-in failed
@@ -188,9 +233,6 @@ class ApiServices {
 
   fetchCart() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-
       // if (token == null) {
       //   throw Exception("Token not found");
       // }
@@ -198,12 +240,35 @@ class ApiServices {
       final options = Options(headers: {
         "ngrok-skip-browser-warning": "69420",
         "accept": "application/json",
-        "Authorization": "Bearer $token", // Add bearer token
       });
 
       final response = await _dio.get(get_cart, options: options);
       final list = List<Cart>.from(response.data.map((x) => Cart.fromMap(x)));
       return list;
+    } catch (e) {
+      print(e);
+      throw Exception(e);
+    }
+  }
+
+  //fetch order
+  fetchOrder() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+      final options = Options(headers: {
+        "ngrok-skip-browser-warning": "69420",
+        "accept": "application/json",
+        "Authorization": "Bearer $token",
+      });
+
+      final response = await _dio.get(get_order, options: options);
+      final List<dynamic> responseData = response.data['data'];
+      print(response.data['data']);
+      final List<Order> orderList =
+          responseData.map((map) => Order.fromMap(map)).toList();
+
+      return orderList;
     } catch (e) {
       print(e);
       throw Exception(e);

@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:food/screens/cart/cart_page.dart';
+import 'package:food/screens/order/order.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
+import '../auth/account_page.dart';
 import 'main_food_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -18,9 +20,9 @@ class _HomePageState extends State<HomePage> {
 
   List pages = [
     MainFoodPaage(),
-    Container(child: Center(child: Text("Next page"))),
+    CartHistory(),
     CartPage(),
-    Container(),
+    AccountPage(),
 //CartHistory(),
 //AccountPage(),
   ];
@@ -39,11 +41,9 @@ class _HomePageState extends State<HomePage> {
   List<Widget> _buildScreens() {
     return [
       MainFoodPaage(),
-      Container(
-        child: Text("history page"),
-      ),
+      CartHistory(),
       CartPage(),
-      Container()
+      AccountPage(),
 //CartHistory(),
 //AccountPage(),
     ];

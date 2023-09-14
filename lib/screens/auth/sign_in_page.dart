@@ -19,9 +19,9 @@ class SignInPage extends StatefulWidget {
 class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
-    var emailController = TextEditingController();
-    var passwordController = TextEditingController();
-
+    var emailController = TextEditingController(text: 'test@gmail.com');
+    var passwordController = TextEditingController(text: 'test');
+    bool isLoading = false;
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -101,36 +101,48 @@ class _SignInPageState extends State<SignInPage> {
             ),
             SizedBox(height: Dimensions.screenHeight * 0.05),
             // sign up
-            GestureDetector(
-              onTap: () async {
-                // Handle sign-in logic here
-                bool a = await ApiServices()
-                    .login(emailController.text, passwordController.text);
-                if (a) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => HomePage(),
+            isLoading == true
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : GestureDetector(
+                    onTap: () async {
+                      // Handle sign-in logic here
+                      setState(() {
+                        isLoading = true;
+                      });
+                      bool a = await ApiServices()
+                          .login(emailController.text, passwordController.text);
+                      if (a) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomePage(),
+                          ),
+                        );
+                      }
+                    },
+                    child: Container(
+                      width: Dimensions.screenWidth / 2,
+                      height: Dimensions.screenHeight / 13,
+                      decoration: BoxDecoration(
+                        borderRadius:
+                            BorderRadius.circular(Dimensions.radius30),
+                        color: AppColors.mainColor,
+                      ),
+                      child: Center(
+                        child: isLoading == false
+                            ? BigText(
+                                text: "Sign In",
+                                size: Dimensions.font20 + Dimensions.font20 + 2,
+                                color: Colors.white,
+                              )
+                            : const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                      ),
                     ),
-                  );
-                }
-              },
-              child: Container(
-                width: Dimensions.screenWidth / 2,
-                height: Dimensions.screenHeight / 13,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(Dimensions.radius30),
-                  color: AppColors.mainColor,
-                ),
-                child: Center(
-                  child: BigText(
-                    text: "Sign In",
-                    size: Dimensions.font20 + Dimensions.font20 + 2,
-                    color: Colors.white,
                   ),
-                ),
-              ),
-            ),
             SizedBox(height: Dimensions.screenHeight * 0.05),
             // sign up options
             RichText(

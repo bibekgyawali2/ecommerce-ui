@@ -1,9 +1,12 @@
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:food/cubits/cubit/popular_cubit.dart';
 import 'package:food/cubits/product_cubit/products_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food/modals/product_modals.dart';
 import 'package:food/screens/food/popular_food_detail.dart';
 import '../../cubits/product_cubit/products_state.dart';
+import '../../modals/order.dart';
 import '../../utils/colors.dart';
 import '../../utils/dimensions.dart';
 import '../../widget/app_column.dart';
@@ -44,15 +47,26 @@ class _FoodPageBodyState extends State<FoodPageBody> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          height: Dimensions.pageView,
-          child: PageView.builder(
-            controller: pageController,
-            itemCount: 6, // Set the item count according to your needs
-            itemBuilder: (context, position) {
-              return _buildPageItem(position);
-            },
-          ),
+        BlocBuilder<PopularCubit, PopularState>(
+          builder: (context, state) {
+            if (state is PopularFetched) {
+              return Container(
+                height: Dimensions.pageView,
+                child: PageView.builder(
+                  controller: pageController,
+                  itemCount: state.products
+                      .length, // Set the item count according to your needs
+                  itemBuilder: (context, position) {
+                    return _buildPageItem(position, state.products);
+                  },
+                ),
+              );
+            } else {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          },
         ),
         DotsIndicator(
           dotsCount: 6, // Set the dots count according to your needs
@@ -205,7 +219,7 @@ class _FoodPageBodyState extends State<FoodPageBody> {
     );
   }
 
-  Widget _buildPageItem(int index) {
+  Widget _buildPageItem(int index, List<ProductsModel> product) {
     Matrix4 matrix = Matrix4.identity();
     if (index == _currPageValue.floor()) {
       var currScale = 1 - (_currPageValue - index) * (1 - _scaleFactor);
