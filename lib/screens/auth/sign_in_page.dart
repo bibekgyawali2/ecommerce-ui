@@ -17,11 +17,35 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
+  bool isLoading = false;
+  handleSignIn(String email, String password) async {
+    setState(() {
+      isLoading = true;
+    });
+    final apiServices = ApiServices();
+    bool isSignedin = await apiServices.login(email, password);
+    setState(() {
+      isLoading = false;
+    });
+    if (isSignedin) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomePage(),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: const Text("invalid username or password"),
+          duration: const Duration(seconds: 1)));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var emailController = TextEditingController(text: 'test@gmail.com');
-    var passwordController = TextEditingController(text: 'test');
-    bool isLoading = false;
+    var passwordController = TextEditingController(text: 'password');
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -101,48 +125,34 @@ class _SignInPageState extends State<SignInPage> {
             ),
             SizedBox(height: Dimensions.screenHeight * 0.05),
             // sign up
-            isLoading == true
-                ? Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : GestureDetector(
-                    onTap: () async {
-                      // Handle sign-in logic here
-                      setState(() {
-                        isLoading = true;
-                      });
-                      bool a = await ApiServices()
-                          .login(emailController.text, passwordController.text);
-                      if (a) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => HomePage(),
-                          ),
-                        );
-                      }
-                    },
-                    child: Container(
-                      width: Dimensions.screenWidth / 2,
-                      height: Dimensions.screenHeight / 13,
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            BorderRadius.circular(Dimensions.radius30),
-                        color: AppColors.mainColor,
+            GestureDetector(
+              onTap: () async {
+                // Handle sign-in logic here
+
+                handleSignIn(emailController.text, passwordController.text);
+              },
+              child: Container(
+                width: Dimensions.screenWidth / 2,
+                height: Dimensions.screenHeight / 13,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(Dimensions.radius30),
+                  color: AppColors.mainColor,
+                ),
+                child: isLoading == true
+                    ? const Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                        ),
+                      )
+                    : Center(
+                        child: BigText(
+                          text: "Sign In",
+                          size: Dimensions.font20 + Dimensions.font20 + 2,
+                          color: Colors.white,
+                        ),
                       ),
-                      child: Center(
-                        child: isLoading == false
-                            ? BigText(
-                                text: "Sign In",
-                                size: Dimensions.font20 + Dimensions.font20 + 2,
-                                color: Colors.white,
-                              )
-                            : const Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                      ),
-                    ),
-                  ),
+              ),
+            ),
             SizedBox(height: Dimensions.screenHeight * 0.05),
             // sign up options
             RichText(

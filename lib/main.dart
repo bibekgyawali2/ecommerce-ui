@@ -54,7 +54,7 @@ class MyApp extends StatelessWidget {
         Locale('ne', 'NP'),
       ],
       title: 'Flutter Demo',
-      home: SignInPage(),
+      home: SplashScreen(),
     );
   }
 }

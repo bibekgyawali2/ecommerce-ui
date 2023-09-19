@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 import '../../modals/order.dart';
 
 String BASE_URL =
-    'https://0ddb-2400-1a00-bd20-f1b2-71af-6e42-5e25-2e2c.ngrok-free.app';
+    'https://823d-2400-1a00-bd20-ca2c-cde2-a607-9b56-bbed.ngrok-free.app';
 
 String PopularProduct = BASE_URL + '/api/viewproducts_details';
 String AddToCart = BASE_URL + '/api/addcart_details';
@@ -148,6 +148,7 @@ class ApiServices {
       final dio = Dio();
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token');
+      //final token = "25|XmCFyy4y5EymY45BkDkfyz6L4w4qDK2btCWYclLX";
 
       final options = BaseOptions(
         baseUrl: MAKE_ORDER, // Replace with your API base URL
@@ -223,11 +224,13 @@ class ApiServices {
         return true;
       } else {
         // Sign-in failed
+
         return false;
       }
     } catch (e) {
       print(e);
-      throw Exception(e);
+      return false;
+      //throw Exception(e);
     }
   }
 
@@ -252,7 +255,7 @@ class ApiServices {
   }
 
   //fetch order
-  fetchOrder() async {
+  Future<List<Order>> fetchOrder() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token');
@@ -264,9 +267,23 @@ class ApiServices {
 
       final response = await _dio.get(get_order, options: options);
       final List<dynamic> responseData = response.data['data'];
-      print(response.data['data']);
-      final List<Order> orderList =
-          responseData.map((map) => Order.fromMap(map)).toList();
+
+      // Create a list to store extracted Order objects
+      List<Order> orderList = [];
+
+      // Iterate through the response data and extract id and price
+      for (var orderData in responseData) {
+        final order = Order.fromMap(orderData);
+        final id = order.id; // Access the id attribute
+        final price = double.parse(order.price); // Parse the price as a double
+
+        // Print or use the id and price as needed
+        print('ID: $id');
+        print('Price: $price');
+
+        // Add the Order object to the list
+        orderList.add(order);
+      }
 
       return orderList;
     } catch (e) {

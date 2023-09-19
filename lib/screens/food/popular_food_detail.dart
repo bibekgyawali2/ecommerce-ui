@@ -135,13 +135,13 @@ class PopularFoodDetail extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AppColumn(text: product.name),
+                  AppColumn(text: products.name!),
                   SizedBox(height: Dimensions.height20),
                   BigText(text: "Introduce"),
                   SizedBox(height: Dimensions.height20),
                   Expanded(
                     child: SingleChildScrollView(
-                      child: ExpandableTextWidget(text: product.description),
+                      child: ExpandableTextWidget(text: products.description!),
                     ),
                   ),
                 ],
@@ -215,7 +215,7 @@ class PopularFoodDetail extends StatelessWidget {
                     left: Dimensions.width20,
                     right: Dimensions.width20),
                 child: BigText(
-                  text: "\RS ${product.price} | Add to cart",
+                  text: "\RS ${products.price} | Add to cart",
                   color: Colors.white,
                 ),
                 decoration: BoxDecoration(

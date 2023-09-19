@@ -10,8 +10,15 @@ import '../../widget/app_icon.dart';
 import '../../widget/big_text.dart';
 import '../../widget/small_text.dart';
 
-class CartPage extends StatelessWidget {
+class CartPage extends StatefulWidget {
   CartPage({Key? key}) : super(key: key);
+
+  @override
+  State<CartPage> createState() => _CartPageState();
+}
+
+class _CartPageState extends State<CartPage> {
+  bool isLoading = false;
   double calculateTotalPrice(List<Cart> cartItems) {
     double total = 0;
     for (var item in cartItems) {
@@ -80,8 +87,8 @@ class CartPage extends StatelessWidget {
                       context: context,
                       removeTop: true,
                       child: ListView.builder(
-                        itemCount:
-                            2, // Replace with the desired number of items
+                        itemCount: state.cart
+                            .length, // Replace with the desired number of items
                         itemBuilder: (_, index) {
                           return Container(
                             width: double.maxFinite,
@@ -303,6 +310,10 @@ class CartPage extends StatelessWidget {
           // Remove trailing separators for other fields
 
           // Now you can call the API with the concatenated values
+          setState(() {
+            isLoading = true;
+          });
+
           bool orderStatus = await ApiServices().addOrder(
             name: 'user name',
             price: price,
@@ -310,6 +321,14 @@ class CartPage extends StatelessWidget {
             product: ids,
             time: DateTime.now(),
           );
+          if (orderStatus) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: const Text("Successfully Ordered"),
+                duration: const Duration(seconds: 1)));
+          }
+          setState(() {
+            isLoading = false;
+          });
           print(orderStatus);
         },
         child: Container(
@@ -334,10 +353,14 @@ class CartPage extends StatelessWidget {
               left: Dimensions.width20,
               right: Dimensions.width20,
             ),
-            child: BigText(
-              text: "Check out",
-              color: Colors.white,
-            ),
+            child: isLoading
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : BigText(
+                    text: "Check out",
+                    color: Colors.white,
+                  ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(Dimensions.radius20),
               color: AppColors.mainColor,

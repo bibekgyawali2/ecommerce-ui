@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:food/screens/auth/sign_in_page.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../utils/colors.dart';
@@ -17,6 +19,11 @@ class AccountPage extends StatefulWidget {
 class _AccountPageState extends State<AccountPage> {
   String? name;
   String? email;
+  Future<void> clearSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+  }
+
   void getData() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -147,9 +154,9 @@ class _AccountPageState extends State<AccountPage> {
                   // ),
                   // logout
                   GestureDetector(
-                    onTap: () {
-                      // Handle logout here
-                      print("you logged out");
+                    onTap: () async {
+                      await clearSharedPreferences();
+                      Get.off(SignInPage());
                     },
                     child: AccountWidget(
                       appIcon: AppIcon(
