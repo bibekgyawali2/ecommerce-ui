@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:food/modals/product_modals.dart';
 import 'package:food/repository/api_service/api_service.dart';
+import 'package:food/screens/cart/cart_page.dart';
 
 import '../../utils/colors.dart';
 import '../../utils/dimensions.dart';
@@ -9,7 +10,7 @@ import '../../widget/app_icon.dart';
 import '../../widget/big_text.dart';
 import '../../widget/expandable_text_widget.dart';
 
-class PopularFoodDetail extends StatelessWidget {
+class PopularFoodDetail extends StatefulWidget {
   final ProductsModel products;
   //final String page;
 
@@ -19,20 +20,34 @@ class PopularFoodDetail extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<PopularFoodDetail> createState() => _PopularFoodDetailState();
+}
+
+class _PopularFoodDetailState extends State<PopularFoodDetail> {
+  @override
   Widget build(BuildContext context) {
-    final product = PopularProduct(
-      id: 1,
-      name: 'Delicious Pizza',
-      img:
-          'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=880&q=80',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-      price: 9.99,
-    );
+    TextEditingController quantityController =
+        TextEditingController(text: 1.toString());
+    int totalItems = 1; // Initialize the quantity to 1
 
-    final totalItems = 2;
+    @override
+    void initState() {
+      super.initState();
+      quantityController.text = totalItems.toString();
+    }
 
-    void setQuantity(bool increase) {
-      // Handle quantity change
+    void increaseQuantity() {
+      if (totalItems < 10) {
+        totalItems++;
+        quantityController.text = totalItems.toString();
+      }
+    }
+
+    void decreaseQuantity() {
+      if (totalItems > 1) {
+        totalItems--;
+        quantityController.text = totalItems.toString();
+      }
     }
 
     // void addItem(Product product) {
@@ -53,7 +68,7 @@ class PopularFoodDetail extends StatelessWidget {
               decoration: BoxDecoration(
                 image: DecorationImage(
                   fit: BoxFit.cover,
-                  image: NetworkImage(product.img),
+                  image: NetworkImage(IMAGE_URL + widget.products.img!),
                 ),
               ),
             ),
@@ -67,47 +82,24 @@ class PopularFoodDetail extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 GestureDetector(
-                  onTap: () {
-                    // if (page == "cartpage") {
-                    //   // Navigator.pushNamed(context, RouteHelper.getCartPage());
-                    // } else {
-                    //   // Navigator.pushNamed(context, RouteHelper.getInitial());
-                    // }
-                  },
+                  onTap: () {},
                   child: AppIcon(icon: Icons.arrow_back_ios),
                 ),
                 GestureDetector(
                   onTap: () {
                     if (totalItems >= 1) {
                       //Navigator.pushNamed(context, RouteHelper.getCartPage());
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CartPage(),
+                        ),
+                      );
                     }
                   },
                   child: Stack(
                     children: [
                       AppIcon(icon: Icons.shopping_cart_outlined),
-                      totalItems >= 1
-                          ? Positioned(
-                              right: 0,
-                              top: 0,
-                              child: AppIcon(
-                                icon: Icons.circle,
-                                size: 20,
-                                iconColor: Colors.transparent,
-                                backgroundColor: AppColors.mainColor,
-                              ),
-                            )
-                          : Container(),
-                      totalItems >= 1
-                          ? Positioned(
-                              right: 3,
-                              top: 3,
-                              child: BigText(
-                                text: totalItems.toString(),
-                                size: 12,
-                                color: Colors.white,
-                              ),
-                            )
-                          : Container(),
                     ],
                   ),
                 ),
@@ -135,13 +127,14 @@ class PopularFoodDetail extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AppColumn(text: products.name!),
+                  AppColumn(text: widget.products.name!),
                   SizedBox(height: Dimensions.height20),
                   BigText(text: "Introduce"),
                   SizedBox(height: Dimensions.height20),
                   Expanded(
                     child: SingleChildScrollView(
-                      child: ExpandableTextWidget(text: products.description!),
+                      child: ExpandableTextWidget(
+                          text: widget.products.description!),
                     ),
                   ),
                 ],
@@ -181,7 +174,9 @@ class PopularFoodDetail extends StatelessWidget {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      setQuantity(false);
+                      decreaseQuantity();
+
+                      print(totalItems);
                     },
                     child: Icon(
                       Icons.remove,
@@ -189,11 +184,29 @@ class PopularFoodDetail extends StatelessWidget {
                     ),
                   ),
                   SizedBox(width: Dimensions.width10 / 2),
-                  BigText(text: totalItems.toString()),
+                  Container(
+                    width: 40, // Adjust the width as needed
+                    alignment: Alignment.center,
+                    child: TextField(
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.symmetric(vertical: 8.0),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                      controller: quantityController,
+                      keyboardType: TextInputType.number,
+                      textAlign: TextAlign.center,
+                      readOnly: true,
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ),
                   SizedBox(width: Dimensions.width10 / 2),
                   GestureDetector(
                     onTap: () {
-                      setQuantity(true);
+                      increaseQuantity();
+                      print(totalItems);
                     },
                     child: Icon(
                       Icons.add,
@@ -206,7 +219,8 @@ class PopularFoodDetail extends StatelessWidget {
             GestureDetector(
               onTap: () async {
                 //   addItem(product);
-                bool success = await ApiServices().addToCart(products);
+                bool success =
+                    await ApiServices().addToCart(widget.products, totalItems);
               },
               child: Container(
                 padding: EdgeInsets.only(
@@ -215,7 +229,7 @@ class PopularFoodDetail extends StatelessWidget {
                     left: Dimensions.width20,
                     right: Dimensions.width20),
                 child: BigText(
-                  text: "\RS ${products.price} | Add to cart",
+                  text: "\RS ${widget.products.price} | Add to cart",
                   color: Colors.white,
                 ),
                 decoration: BoxDecoration(

@@ -22,31 +22,31 @@ class AppColumn extends StatelessWidget {
         SizedBox(
           height: Dimensions.height10,
         ),
-        Row(
-          children: [
-            Wrap(
-              children: List.generate(5, (index) {
-                return Icon(
-                  Icons.star,
-                  color: AppColors.mainColor,
-                  size: 15,
-                );
-              }),
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            SmallText(text: "4.5"),
-            SizedBox(
-              width: 10,
-            ),
-            SmallText(text: "1285"),
-            SizedBox(
-              width: 10,
-            ),
-            SmallText(text: "comments")
-          ],
-        ),
+        // Row(
+        //   children: [
+        //     Wrap(
+        //       children: List.generate(5, (index) {
+        //         return Icon(
+        //           Icons.star,
+        //           color: AppColors.mainColor,
+        //           size: 15,
+        //         );
+        //       }),
+        //     ),
+        //     SizedBox(
+        //       width: 10,
+        //     ),
+        //     SmallText(text: "4.5"),
+        //     SizedBox(
+        //       width: 10,
+        //     ),
+        //     SmallText(text: "1285"),
+        //     SizedBox(
+        //       width: 10,
+        //     ),
+        //     SmallText(text: "comments")
+        //   ],
+        // ),
         SizedBox(
           height: Dimensions.height20,
         ),

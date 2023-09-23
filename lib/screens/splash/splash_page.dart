@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:food/screens/auth/sign_in_page.dart';
 import 'package:food/screens/home/home_page.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -29,6 +30,35 @@ class _SplashScreenState extends State<SplashScreen>
 
     // Check if SharedPreferences has data
     checkSharedPreferencesData();
+  }
+
+  double? latitude;
+  double? longitude;
+  Future<void> getCurrentLocation() async {
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      latitude = position.latitude;
+      longitude = position.longitude;
+
+      // Use the latitude and longitude as needed
+      print('Latitude: $latitude, Longitude: $longitude');
+    } catch (e) {
+      // Handle any errors that may occur while getting the location
+      print('Error: $e');
+    }
+  }
+
+  Future<void> checkLocationPermission() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Handle the case where the user denied the permission
+        // You may want to show an error message or provide instructions on how to enable location services.
+      }
+    }
   }
 
   Future<void> checkSharedPreferencesData() async {

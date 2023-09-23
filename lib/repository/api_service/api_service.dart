@@ -8,10 +8,12 @@ import 'package:http/http.dart' as http;
 import '../../modals/order.dart';
 
 String BASE_URL =
-    'https://823d-2400-1a00-bd20-ca2c-cde2-a607-9b56-bbed.ngrok-free.app';
+    'https://241c-2400-1a00-bd20-a434-adc0-e389-e899-8f62.ngrok-free.app';
 
+String IMAGE_URL = BASE_URL + '/images/products/';
 String PopularProduct = BASE_URL + '/api/viewproducts_details';
 String AddToCart = BASE_URL + '/api/addcart_details';
+String deleteCart = BASE_URL + '/api/deletecart_details';
 String MAKE_ORDER = BASE_URL + '/api/create-order';
 String sign_in = BASE_URL + '/api/login';
 String get_cart = BASE_URL + '/api/cart_details';
@@ -20,6 +22,47 @@ String top_selling = BASE_URL = '/topSellingProduct';
 
 class ApiServices {
   Dio _dio = Dio();
+  String apiKey = "990fdcba80304491975861832e86d4aa";
+  Future<Map<String, String>> fetchLocation(
+      double latitude, double longitude) async {
+    final Uri uri = Uri.parse(
+        "https://api.geoapify.com/v1/geocode/reverse?lat=$latitude&lon=$longitude&apiKey=$apiKey");
+
+    try {
+      final response = await http.get(uri);
+
+      if (response.statusCode == 200) {
+        final decodedResponse = json.decode(response.body);
+        final List<dynamic> features = decodedResponse['features'];
+        if (features.isNotEmpty) {
+          final city = features[0]['properties']['city'];
+          final municipality = features[0]['properties']['municipality'];
+          return {
+            'city': city ?? '',
+            'municipality': municipality ?? '',
+          };
+        } else {
+          print("No features found in the response.");
+          return {
+            'city': '',
+            'municipality': '',
+          };
+        }
+      } else {
+        print("Failed to fetch data. Status code: ${response.statusCode}");
+        return {
+          'city': '',
+          'municipality': '',
+        };
+      }
+    } catch (error) {
+      print("Error: $error");
+      return {
+        'city': '',
+        'municipality': '',
+      };
+    }
+  }
 
   Future<List<ProductsModel>> FetchProduct() async {
     try {
@@ -37,6 +80,7 @@ class ApiServices {
       });
 
       final response = await _dio.get(PopularProduct, options: options);
+      print(response.data);
       final list = List<ProductsModel>.from(
           response.data.map((x) => ProductsModel.fromMap(x)));
       return list;
@@ -102,7 +146,34 @@ class ApiServices {
     }
   }
 
-  Future<bool> addToCart(ProductsModel item) async {
+  Future<bool> delete_cart(int id) async {
+    try {
+      final options = Options(headers: {
+        'accept': 'application/json',
+        // Add your headers here
+        "ngrok-skip-browser-warning": "69420",
+      });
+      final Map<String, dynamic> requestBody = {
+        "id": id,
+      };
+      var response =
+          await _dio.delete(deleteCart, data: requestBody, options: options);
+      print(response);
+      if (response.statusCode == 200) {
+        var a = response.data;
+        // Successful sign-up
+        return true;
+      } else {
+        // Sign-up failed
+        return false;
+      }
+    } catch (e) {
+      print(e);
+      throw Exception(e);
+    }
+  }
+
+  Future<bool> addToCart(ProductsModel item, int quantity) async {
     try {
       final options = Options(headers: {
         'accept': 'application/json',
@@ -160,6 +231,8 @@ class ApiServices {
       );
 
       final dioInstance = Dio(options);
+      // Calculate the time as a floating-point value
+      double timeValue = time.hour.toDouble() + (time.minute.toDouble() / 60.0);
 
       final Map<String, dynamic> requestBody = {
         "name": name,
@@ -167,8 +240,8 @@ class ApiServices {
         "quantity": quantity,
         "isExist": true, // Use boolean value instead of string 'true'
         "product": product,
-        "status": 'order-placed', // Modify as needed
-        "time": 2.2, // Convert DateTime to string
+        "status": 'order-placed-paid', // Modify as needed
+        "time": timeValue, // Convert DateTime to string
       };
 
       final response = await dioInstance.post(

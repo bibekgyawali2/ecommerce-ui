@@ -1,13 +1,13 @@
 class ProductsModel {
-  int? id;
-  String? name;
-  String? price;
-  String? description;
-  double? stars;
-  String? img;
-  String? location;
-  int? typeId;
-  int? quantity;
+  var id;
+  var name;
+  var price;
+  var description;
+  var stars;
+  var img;
+  var location;
+  var typeId;
+  var quantity;
 
   ProductsModel({
     this.id,

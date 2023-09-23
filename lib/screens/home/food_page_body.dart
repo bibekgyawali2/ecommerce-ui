@@ -4,7 +4,9 @@ import 'package:food/cubits/cubit/popular_cubit.dart';
 import 'package:food/cubits/product_cubit/products_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food/modals/product_modals.dart';
+import 'package:food/repository/api_service/api_service.dart';
 import 'package:food/screens/food/popular_food_detail.dart';
+import 'package:get/get.dart';
 import '../../cubits/product_cubit/products_state.dart';
 import '../../modals/order.dart';
 import '../../utils/colors.dart';
@@ -57,7 +59,7 @@ class _FoodPageBodyState extends State<FoodPageBody> {
                   itemCount: state.products
                       .length, // Set the item count according to your needs
                   itemBuilder: (context, position) {
-                    return _buildPageItem(position, state.products);
+                    return _buildPageItem(position, state.products[position]);
                   },
                 ),
               );
@@ -114,6 +116,7 @@ class _FoodPageBodyState extends State<FoodPageBody> {
                 itemCount: state.products
                     .length, // Set the item count according to your needs
                 itemBuilder: (context, index) {
+                  print(state.products[index].img);
                   return GestureDetector(
                     onTap: () {
                       Navigator.of(context).push(
@@ -142,7 +145,7 @@ class _FoodPageBodyState extends State<FoodPageBody> {
                               image: DecorationImage(
                                 fit: BoxFit.cover,
                                 image: NetworkImage(
-                                  "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=880&q=80",
+                                  IMAGE_URL + state.products[index].img!,
                                 ),
                               ),
                             ),
@@ -183,11 +186,11 @@ class _FoodPageBodyState extends State<FoodPageBody> {
                                           text: "Normal",
                                           iconColor: AppColors.iconColor1,
                                         ),
-                                        IconAndTextWidget(
-                                          icon: Icons.location_on,
-                                          text: "1.7km",
-                                          iconColor: AppColors.mainColor,
-                                        ),
+                                        // IconAndTextWidget(
+                                        //   icon: Icons.location_on,
+                                        //   text: "1.7km",
+                                        //   iconColor: AppColors.mainColor,
+                                        // ),
                                         IconAndTextWidget(
                                           icon: Icons.access_time_rounded,
                                           text: "30min",
@@ -219,7 +222,7 @@ class _FoodPageBodyState extends State<FoodPageBody> {
     );
   }
 
-  Widget _buildPageItem(int index, List<ProductsModel> product) {
+  Widget _buildPageItem(int index, ProductsModel product) {
     Matrix4 matrix = Matrix4.identity();
     if (index == _currPageValue.floor()) {
       var currScale = 1 - (_currPageValue - index) * (1 - _scaleFactor);
@@ -249,7 +252,11 @@ class _FoodPageBodyState extends State<FoodPageBody> {
         children: [
           GestureDetector(
             onTap: () {
-              // Handle page item onTap
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => PopularFoodDetail(products: product),
+                ),
+              );
             },
             child: Container(
               height: Dimensions.pageViewContainer,
@@ -263,7 +270,7 @@ class _FoodPageBodyState extends State<FoodPageBody> {
                 image: DecorationImage(
                   fit: BoxFit.cover,
                   image: NetworkImage(
-                    "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=880&q=80",
+                    IMAGE_URL + product.img!,
                   ),
                 ),
               ),
@@ -297,7 +304,7 @@ class _FoodPageBodyState extends State<FoodPageBody> {
                   left: 15,
                   right: 15,
                 ),
-                child: AppColumn(text: "Product Name"),
+                child: AppColumn(text: product.name!),
               ),
             ),
           ),

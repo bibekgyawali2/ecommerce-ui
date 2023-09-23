@@ -1,10 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food/screens/home/home_page.dart';
+import 'package:food/screens/home/main_food_page.dart';
 import 'package:khalti/khalti.dart';
 import 'package:url_launcher/url_launcher.dart' as url_launcher;
 
-class KhaltiExampleApp extends StatelessWidget {
+import '../../cubits/cubit/cart_cubit.dart';
+import '../../modals/cart.dart';
+import '../../repository/api_service/api_service.dart';
+
+class KhaltiExampleApp extends StatefulWidget {
   const KhaltiExampleApp({Key? key}) : super(key: key);
 
+  @override
+  State<KhaltiExampleApp> createState() => _KhaltiExampleAppState();
+}
+
+class _KhaltiExampleAppState extends State<KhaltiExampleApp> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -80,6 +92,9 @@ class _WalletPaymentState extends State<WalletPayment> {
           ),
           const SizedBox(height: 24),
           ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.deepPurple,
+            ),
             onPressed: () async {
               if (!(_formKey.currentState?.validate() ?? false)) return;
               final messenger = ScaffoldMessenger.maybeOf(context);
@@ -105,7 +120,47 @@ class _WalletPaymentState extends State<WalletPayment> {
                       transactionPin: _pinController.text,
                     ),
                   );
-
+                  List<Cart> cartItems =
+                      (BlocProvider.of<CartCubit>(context).state as CartFetched)
+                          .cart;
+                  List<int> ids = [];
+                  String name = "";
+                  double price = 0.0;
+                  String img = "";
+                  int totalQuantity = 0;
+                  for (var item in cartItems) {
+                    var a = item.id;
+                    ids.add(a!);
+                    name += item.product ?? ""; // Concatenate product name
+                    double itemPrice = double.tryParse(item.price ?? "0") ?? 0;
+                    int itemQuantity =
+                        item.quantity ?? 0; // No need for conversion
+                    totalQuantity += itemQuantity;
+                    price += itemPrice; // Concatenate price
+                    name += ", ";
+                    img = item.img ?? img;
+                  }
+                  name =
+                      name.isNotEmpty ? name.substring(0, name.length - 2) : "";
+                  bool orderStatus = await ApiServices().addOrder(
+                    name: 'user name',
+                    price: price,
+                    quantity: totalQuantity,
+                    product: ids,
+                    time: DateTime.now(),
+                  );
+                  if (orderStatus) {
+                    // ignore: use_build_context_synchronously
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text("Successfully Ordered"),
+                        duration: Duration(seconds: 1)));
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HomePage(),
+                      ),
+                    );
+                  }
                   debugPrint(model.toString());
                 } catch (e) {
                   messenger?.showSnackBar(
@@ -114,7 +169,7 @@ class _WalletPaymentState extends State<WalletPayment> {
                 }
               }
             },
-            child: const Text('PAY Rs. 10'),
+            child: const Text('PAY '),
           ),
         ],
       ),
