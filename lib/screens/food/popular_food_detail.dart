@@ -254,6 +254,7 @@ class _PopularFoodDetailState extends State<PopularFoodDetail> {
                 child: BigText(
                   text: "\RS ${widget.products.price} | Add to cart",
                   color: Colors.white,
+                  size: 15,
                 ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(Dimensions.radius20),
