@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:food/modals/product_modals.dart';
 import 'package:food/repository/api_service/api_service.dart';
 import 'package:food/screens/cart/cart_page.dart';
@@ -137,6 +138,28 @@ class _PopularFoodDetailState extends State<PopularFoodDetail> {
                           text: widget.products.description!),
                     ),
                   ),
+                  RatingBar.builder(
+                    itemSize: 20,
+                    initialRating:
+                        0, // Initial rating value, set to 0 initially
+                    minRating: 1, // Minimum rating
+                    direction: Axis.horizontal,
+                    allowHalfRating:
+                        true, // Set to true if you want to allow half-star ratings
+                    itemCount: 5, // The number of stars
+                    itemPadding: EdgeInsets.symmetric(
+                        horizontal: 4.0), // Padding between stars
+                    itemBuilder: (context, _) => Icon(
+                      Icons.star,
+                      color: Colors.amber, // Star color when filled
+                    ),
+                    onRatingUpdate: (rating) {
+                      ApiServices().rating(
+                          rating: rating,
+                          productid: widget.products.id,
+                          message: "true");
+                    },
+                  )
                 ],
               ),
             ),

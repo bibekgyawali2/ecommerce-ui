@@ -44,7 +44,7 @@ class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     var emailController = TextEditingController(text: 'test@gmail.com');
-    var passwordController = TextEditingController(text: 'password');
+    var passwordController = TextEditingController(text: 'test');
 
     return Scaffold(
       backgroundColor: Colors.white,

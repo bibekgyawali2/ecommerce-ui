@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:food/screens/auth/sign_in_page.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../utils/colors.dart';
 import '../../utils/dimensions.dart';
 import '../../widget/account_widget.dart';
@@ -32,10 +32,27 @@ class _AccountPageState extends State<AccountPage> {
     });
   }
 
+  final ImagePicker _picker = ImagePicker();
   @override
   void initState() {
     super.initState();
     getData();
+  }
+
+  Future<void> _pickImageFromGallery() async {
+    try {
+      final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+
+      if (pickedFile != null) {
+        // You can handle the selected image here, e.g., display it or upload it.
+        // pickedFile.path will contain the path to the selected image file.
+      } else {
+        // User canceled the image selection
+      }
+    } catch (e) {
+      // Handle any exceptions that might occur during image picking.
+      print('Error picking image: $e');
+    }
   }
 
   @override
@@ -60,12 +77,17 @@ class _AccountPageState extends State<AccountPage> {
       child: Column(
         children: [
           //profile
-          AppIcon(
-            icon: Icons.person,
-            backgroundColor: AppColors.mainColor,
-            iconColor: Colors.white,
-            iconSize: Dimensions.height45 + Dimensions.height30,
-            size: Dimensions.height15 * 10,
+          GestureDetector(
+            onTap: () {
+              _pickImageFromGallery();
+            },
+            child: AppIcon(
+              icon: Icons.person,
+              backgroundColor: AppColors.mainColor,
+              iconColor: Colors.white,
+              iconSize: Dimensions.height45 + Dimensions.height30,
+              size: Dimensions.height15 * 10,
+            ),
           ),
           SizedBox(
             height: Dimensions.height30,

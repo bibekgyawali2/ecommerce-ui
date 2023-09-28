@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food/repository/api_service/api_service.dart';
 import 'package:food/screens/khalti/khalti.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../cubits/cubit/cart_cubit.dart';
 import '../../modals/cart.dart';
 import '../../utils/colors.dart';
@@ -29,206 +30,223 @@ class _CartPageState extends State<CartPage> {
     return total;
   }
 
+  String? name;
+  void getData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      name = prefs.getString('name');
+    });
+  }
+
+  Future<void> _onRefresh() async {
+    BlocProvider.of<CartCubit>(context).fetchCart();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.mainColor,
-        title: Text('Cart'),
+        title: const Text('Cart'),
         elevation: 0,
       ),
-      body: BlocBuilder<CartCubit, CartState>(
-        builder: (context, state) {
-          if (state is CartFetched) {
-            return SafeArea(
-              child: Stack(
-                children: [
-                  Positioned(
-                    top: Dimensions.height20 * 1,
-                    left: Dimensions.width20,
-                    right: Dimensions.width20,
-                    bottom: 0,
-                    child: Container(
-                      margin: EdgeInsets.only(top: Dimensions.height15),
-                      child: MediaQuery.removePadding(
-                        context: context,
-                        removeTop: true,
-                        child: ListView.builder(
-                          itemCount: state.cart
-                              .length, // Replace with the desired number of items
-                          itemBuilder: (_, index) {
-                            return Container(
-                              width: double.maxFinite,
-                              height: Dimensions.height20 * 5,
-                              child: Row(
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      // Handle product tap
-                                    },
-                                    child: Container(
-                                      width: Dimensions.height20 * 5,
-                                      height: Dimensions.height20 * 5,
-                                      margin: EdgeInsets.only(
-                                          bottom: Dimensions.height10),
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                          fit: BoxFit.cover,
-                                          image: NetworkImage(
-                                            "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=880&q=80",
+      body: RefreshIndicator(
+        onRefresh: _onRefresh,
+        child: BlocBuilder<CartCubit, CartState>(
+          builder: (context, state) {
+            if (state is CartFetched) {
+              return SafeArea(
+                child: Stack(
+                  children: [
+                    Positioned(
+                      top: Dimensions.height20 * 1,
+                      left: Dimensions.width20,
+                      right: Dimensions.width20,
+                      bottom: 0,
+                      child: Container(
+                        margin: EdgeInsets.only(top: Dimensions.height15),
+                        child: MediaQuery.removePadding(
+                          context: context,
+                          removeTop: true,
+                          child: ListView.builder(
+                            itemCount: state.cart
+                                .length, // Replace with the desired number of items
+                            itemBuilder: (_, index) {
+                              return Container(
+                                width: double.maxFinite,
+                                height: Dimensions.height20 * 5,
+                                child: Row(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        // Handle product tap
+                                      },
+                                      child: Container(
+                                        width: Dimensions.height20 * 5,
+                                        height: Dimensions.height20 * 5,
+                                        margin: EdgeInsets.only(
+                                            bottom: Dimensions.height10),
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                            fit: BoxFit.cover,
+                                            image: NetworkImage(
+                                              "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=880&q=80",
+                                            ),
                                           ),
+                                          borderRadius: BorderRadius.circular(
+                                              Dimensions.radius20),
+                                          color: Colors.white,
                                         ),
-                                        borderRadius: BorderRadius.circular(
-                                            Dimensions.radius20),
-                                        color: Colors.white,
                                       ),
                                     ),
-                                  ),
-                                  SizedBox(
-                                    width: Dimensions.width10,
-                                  ),
-                                  Expanded(
-                                    child: Container(
-                                      height: Dimensions.height20 * 5,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          BigText(
-                                            text: state.cart[index]
-                                                .product!, // Replace with dynamic text
-                                            color: Colors.black54,
-                                          ),
-                                          // SmallText(text: "Spicy"),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              BigText(
-                                                text: state.cart[index]
-                                                    .price!, // Replace with dynamic price
-                                                color: Colors.redAccent,
-                                              ),
-                                              Container(
-                                                padding: EdgeInsets.only(
-                                                  top: Dimensions.height10,
-                                                  bottom: Dimensions.height10,
-                                                  left: Dimensions.width10,
-                                                  right: Dimensions.width10,
+                                    SizedBox(
+                                      width: Dimensions.width10,
+                                    ),
+                                    Expanded(
+                                      child: Container(
+                                        height: Dimensions.height20 * 5,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            BigText(
+                                              text: state.cart[index]
+                                                  .product!, // Replace with dynamic text
+                                              color: Colors.black54,
+                                            ),
+                                            // SmallText(text: "Spicy"),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                BigText(
+                                                  text: state.cart[index]
+                                                      .price!, // Replace with dynamic price
+                                                  color: Colors.redAccent,
                                                 ),
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          Dimensions.radius20),
-                                                  color: Colors.white,
+                                                Container(
+                                                  padding: EdgeInsets.only(
+                                                    top: Dimensions.height10,
+                                                    bottom: Dimensions.height10,
+                                                    left: Dimensions.width10,
+                                                    right: Dimensions.width10,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            Dimensions
+                                                                .radius20),
+                                                    color: Colors.white,
+                                                  ),
+                                                  child: Row(
+                                                    children: [
+                                                      IconButton(
+                                                          onPressed: () {
+                                                            ApiServices()
+                                                                .delete_cart(state
+                                                                    .cart[index]
+                                                                    .id!);
+                                                            BlocProvider.of<
+                                                                        CartCubit>(
+                                                                    context)
+                                                                .fetchCart();
+                                                          },
+                                                          icon: Icon(
+                                                              Icons.delete))
+                                                    ],
+                                                  ),
                                                 ),
-                                                child: Row(
-                                                  children: [
-                                                    IconButton(
-                                                        onPressed: () {
-                                                          ApiServices()
-                                                              .delete_cart(state
-                                                                  .cart[index]
-                                                                  .id!);
-                                                          BlocProvider.of<
-                                                                      CartCubit>(
-                                                                  context)
-                                                              .fetchCart();
-                                                        },
-                                                        icon:
-                                                            Icon(Icons.delete))
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    child: Container(
-                      height: Dimensions.bottomHeightBar,
-                      padding: EdgeInsets.only(
-                        top: Dimensions.height30,
-                        bottom: Dimensions.height30,
-                        left: Dimensions.width20,
-                        right: Dimensions.width20,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.buttonBackgroundColor,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(Dimensions.radius20 * 2),
-                          topRight: Radius.circular(Dimensions.radius20 * 2),
-                        ),
-                      ),
+                    Positioned(
+                      bottom: 0,
                       child: Container(
+                        height: Dimensions.bottomHeightBar,
                         padding: EdgeInsets.only(
-                          top: Dimensions.height20,
-                          bottom: Dimensions.height20,
+                          top: Dimensions.height30,
+                          bottom: Dimensions.height30,
                           left: Dimensions.width20,
                           right: Dimensions.width20,
                         ),
                         decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(Dimensions.radius20),
-                          color: Colors.white,
+                          color: AppColors.buttonBackgroundColor,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(Dimensions.radius20 * 2),
+                            topRight: Radius.circular(Dimensions.radius20 * 2),
+                          ),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            SizedBox(
-                              width: Dimensions.width10 / 2,
-                            ),
-                            BigText(
-                              text:
-                                  "\RS ${calculateTotalPrice(state.cart).toStringAsFixed(2)}", // Replace with dynamic total amount
-                            ),
-                            SizedBox(
-                              width: Dimensions.width10 / 2,
-                            ),
-                          ],
+                        child: Container(
+                          padding: EdgeInsets.only(
+                            top: Dimensions.height20,
+                            bottom: Dimensions.height20,
+                            left: Dimensions.width20,
+                            right: Dimensions.width20,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.circular(Dimensions.radius20),
+                            color: Colors.white,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              SizedBox(
+                                width: Dimensions.width10 / 2,
+                              ),
+                              BigText(
+                                text:
+                                    "\RS ${calculateTotalPrice(state.cart).toStringAsFixed(2)}", // Replace with dynamic total amount
+                              ),
+                              SizedBox(
+                                width: Dimensions.width10 / 2,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
+                  ],
+                ),
+              );
+            } else if (state is CartLoading) {
+              return Center(
+                child: const CircularProgressIndicator(
+                  color: Colors.amber,
+                ),
+              );
+            } else {
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TextButton(
+                    onPressed: () {},
+                    child: Text('RETRY'),
+                  ),
+                  Center(
+                    child: Text('Something Went Wrong'),
                   ),
                 ],
-              ),
-            );
-          } else if (state is CartLoading) {
-            return Center(
-              child: const CircularProgressIndicator(
-                color: Colors.amber,
-              ),
-            );
-          } else {
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                TextButton(
-                  onPressed: () {},
-                  child: Text('RETRY'),
-                ),
-                Center(
-                  child: Text('Something Went Wrong'),
-                ),
-              ],
-            );
-          }
-          return SizedBox();
-        },
+              );
+            }
+            return SizedBox();
+          },
+        ),
       ),
       bottomNavigationBar: GestureDetector(
         onTap: () async {
