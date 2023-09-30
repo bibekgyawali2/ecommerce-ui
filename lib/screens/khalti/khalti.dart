@@ -96,117 +96,117 @@ class _WalletPaymentState extends State<WalletPayment> {
               backgroundColor: Colors.deepPurple,
             ),
             onPressed: () async {
-              // if (!(_formKey.currentState?.validate() ?? false)) return;
-              // final messenger = ScaffoldMessenger.maybeOf(context);
-              // final initiationModel = await Khalti.service.initiatePayment(
-              //   request: PaymentInitiationRequestModel(
-              //     amount: 1000,
-              //     mobile: _mobileController.text,
-              //     productIdentity: 'asdfasdfaf',
-              //     productName: 'Apple Mac Mini',
-              //     transactionPin: _pinController.text,
-              //     // productUrl: 'https://khalti.com/bazaar/mac-mini-16-512-m1',
-              //   ),
-              // );
-
-              // final otpCode = await _showOTPSentDialog();
-
-              // if (otpCode != null) {
-              //   try {
-              //     final model = await Khalti.service.confirmPayment(
-              //       request: PaymentConfirmationRequestModel(
-              //         confirmationCode: otpCode,
-              //         token: initiationModel.token,
-              //         transactionPin: _pinController.text,
-              //       ),
-              //     );
-              //     List<Cart> cartItems =
-              //         (BlocProvider.of<CartCubit>(context).state as CartFetched)
-              //             .cart;
-              //     List<int> ids = [];
-              //     String name = "";
-              //     double price = 0.0;
-              //     String img = "";
-              //     int totalQuantity = 0;
-              //     for (var item in cartItems) {
-              //       var a = item.id;
-              //       ids.add(a!);
-              //       name += item.product ?? ""; // Concatenate product name
-              //       double itemPrice = double.tryParse(item.price ?? "0") ?? 0;
-              //       int itemQuantity =
-              //           item.quantity ?? 0; // No need for conversion
-              //       totalQuantity += itemQuantity;
-              //       price += itemPrice; // Concatenate price
-              //       name += ", ";
-              //       img = item.img ?? img;
-              //     }
-              //     name =
-              //         name.isNotEmpty ? name.substring(0, name.length - 2) : "";
-              //     bool orderStatus = await ApiServices().addOrder(
-              //       name: 'user name',
-              //       price: price,
-              //       quantity: totalQuantity,
-              //       product: ids,
-              //       time: DateTime.now(),
-              //     );
-              //     if (orderStatus) {
-              //       // ignore: use_build_context_synchronously
-              //       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              //           content: Text("Successfully Ordered"),
-              //           duration: Duration(seconds: 1)));
-              //       Navigator.push(
-              //         context,
-              //         MaterialPageRoute(
-              //           builder: (context) => HomePage(),
-              //         ),
-              //       );
-              //     }
-              //     debugPrint(model.toString());
-              //   } catch (e) {
-              //     messenger?.showSnackBar(
-              //       SnackBar(content: Text(e.toString())),
-              //     );
-              //   }
-              // }
-              List<Cart> cartItems =
-                  (BlocProvider.of<CartCubit>(context).state as CartFetched)
-                      .cart;
-              List<int> ids = [];
-              String name = "";
-              double price = 0.0;
-              String img = "";
-              int totalQuantity = 0;
-              for (var item in cartItems) {
-                var a = item.id;
-                ids.add(a!);
-                name += item.product ?? ""; // Concatenate product name
-                double itemPrice = double.tryParse(item.price ?? "0") ?? 0;
-                int itemQuantity = item.quantity ?? 0; // No need for conversion
-                totalQuantity += itemQuantity;
-                price += itemPrice; // Concatenate price
-                name += ", ";
-                img = item.img ?? img;
-              }
-              name = name.isNotEmpty ? name.substring(0, name.length - 2) : "";
-              bool orderStatus = await ApiServices().addOrder(
-                name: 'name',
-                price: price,
-                quantity: totalQuantity,
-                product: ids,
-                time: DateTime.now(),
+              if (!(_formKey.currentState?.validate() ?? false)) return;
+              final messenger = ScaffoldMessenger.maybeOf(context);
+              final initiationModel = await Khalti.service.initiatePayment(
+                request: PaymentInitiationRequestModel(
+                  amount: 1000,
+                  mobile: _mobileController.text,
+                  productIdentity: 'asdfasdfaf',
+                  productName: 'Apple Mac Mini',
+                  transactionPin: _pinController.text,
+                  // productUrl: 'https://khalti.com/bazaar/mac-mini-16-512-m1',
+                ),
               );
-              if (orderStatus) {
-                // ignore: use_build_context_synchronously
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text("Successfully Ordered"),
-                    duration: Duration(seconds: 1)));
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => HomePage(),
-                  ),
-                );
+
+              final otpCode = await _showOTPSentDialog();
+
+              if (otpCode != null) {
+                try {
+                  final model = await Khalti.service.confirmPayment(
+                    request: PaymentConfirmationRequestModel(
+                      confirmationCode: otpCode,
+                      token: initiationModel.token,
+                      transactionPin: _pinController.text,
+                    ),
+                  );
+                  List<Cart> cartItems =
+                      (BlocProvider.of<CartCubit>(context).state as CartFetched)
+                          .cart;
+                  List<int> ids = [];
+                  String name = "";
+                  double price = 0.0;
+                  String img = "";
+                  int totalQuantity = 0;
+                  for (var item in cartItems) {
+                    var a = item.id;
+                    ids.add(a!);
+                    name += item.product ?? ""; // Concatenate product name
+                    double itemPrice = double.tryParse(item.price ?? "0") ?? 0;
+                    int itemQuantity =
+                        item.quantity ?? 0; // No need for conversion
+                    totalQuantity += itemQuantity;
+                    price += itemPrice; // Concatenate price
+                    name += ", ";
+                    img = item.img ?? img;
+                  }
+                  name =
+                      name.isNotEmpty ? name.substring(0, name.length - 2) : "";
+                  bool orderStatus = await ApiServices().addOrder(
+                    name: 'user name',
+                    price: price,
+                    quantity: totalQuantity,
+                    product: ids,
+                    time: DateTime.now(),
+                  );
+                  if (orderStatus) {
+                    // ignore: use_build_context_synchronously
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text("Successfully Ordered"),
+                        duration: Duration(seconds: 1)));
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HomePage(),
+                      ),
+                    );
+                  }
+                  debugPrint(model.toString());
+                } catch (e) {
+                  messenger?.showSnackBar(
+                    SnackBar(content: Text(e.toString())),
+                  );
+                }
               }
+              // List<Cart> cartItems =
+              //     (BlocProvider.of<CartCubit>(context).state as CartFetched)
+              //         .cart;
+              // List<int> ids = [];
+              // String name = "";
+              // double price = 0.0;
+              // String img = "";
+              // int totalQuantity = 0;
+              // for (var item in cartItems) {
+              //   var a = item.id;
+              //   ids.add(a!);
+              //   name += item.product ?? ""; // Concatenate product name
+              //   double itemPrice = double.tryParse(item.price ?? "0") ?? 0;
+              //   int itemQuantity = item.quantity ?? 0; // No need for conversion
+              //   totalQuantity += itemQuantity;
+              //   price += itemPrice; // Concatenate price
+              //   name += ", ";
+              //   img = item.img ?? img;
+              // }
+              // name = name.isNotEmpty ? name.substring(0, name.length - 2) : "";
+              // bool orderStatus = await ApiServices().addOrder(
+              //   name: 'name',
+              //   price: price,
+              //   quantity: totalQuantity,
+              //   product: ids,
+              //   time: DateTime.now(),
+              // );
+              // if (orderStatus) {
+              //   // ignore: use_build_context_synchronously
+              //   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              //       content: Text("Successfully Ordered"),
+              //       duration: Duration(seconds: 1)));
+              //   Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //       builder: (context) => HomePage(),
+              //     ),
+              //   );
+              // }
             },
             child: const Text('PAY '),
           ),
