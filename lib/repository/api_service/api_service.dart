@@ -7,8 +7,7 @@ import 'package:http/http.dart' as http;
 
 import '../../modals/order.dart';
 
-String BASE_URL =
-    'https://8615-2400-1a00-bd20-21c3-90d2-53c7-1222-e962.ngrok-free.app';
+String BASE_URL = 'https://a35d-27-34-17-111.ngrok-free.app';
 
 String IMAGE_URL = BASE_URL + '/images/products/';
 String PopularProduct = BASE_URL + '/api/viewproducts_details';
