@@ -144,8 +144,8 @@ class _CartPageState extends State<CartPage> {
                                                   child: Row(
                                                     children: [
                                                       IconButton(
-                                                          onPressed: () {
-                                                            ApiServices()
+                                                          onPressed: () async {
+                                                            await ApiServices()
                                                                 .delete_cart(state
                                                                     .cart[index]
                                                                     .id!);
@@ -279,17 +279,13 @@ class _CartPageState extends State<CartPage> {
               left: Dimensions.width20,
               right: Dimensions.width20,
             ),
-            child: isLoading
-                ? Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : BigText(
-                    text: "Check out",
-                    color: Colors.white,
-                  ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(Dimensions.radius20),
               color: AppColors.mainColor,
+            ),
+            child: BigText(
+              text: "Check out",
+              color: Colors.white,
             ),
           ),
         ),

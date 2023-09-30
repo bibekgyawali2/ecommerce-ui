@@ -9,7 +9,9 @@ import 'icon_and_text.dart';
 
 class AppColumn extends StatelessWidget {
   final String text;
-  const AppColumn({Key? key, required this.text}) : super(key: key);
+  final String price;
+  const AppColumn({Key? key, required this.text, required this.price})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -62,8 +64,8 @@ class AppColumn extends StatelessWidget {
             //     text: "1.7km",
             //     iconColor: AppColors.mainColor),
             IconAndTextWidget(
-                icon: Icons.access_time_rounded,
-                text: "30min",
+                icon: Icons.monetization_on,
+                text: price,
                 iconColor: AppColors.iconColor2),
           ],
         )

@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 import '../../modals/order.dart';
 
 String BASE_URL =
-    'https://0bd8-2400-1a00-bd20-c2c6-80f4-c4c-3f71-d027.ngrok-free.app';
+    'https://8615-2400-1a00-bd20-21c3-90d2-53c7-1222-e962.ngrok-free.app';
 
 String IMAGE_URL = BASE_URL + '/images/products/';
 String PopularProduct = BASE_URL + '/api/viewproducts_details';
@@ -151,14 +151,17 @@ class ApiServices {
 
   Future<bool> delete_cart(int id) async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
       final options = Options(headers: {
         'accept': 'application/json',
         "ngrok-skip-browser-warning": "69420",
+        "Authorization": "Bearer $token",
       });
 
-      print(BASE_URL + '/api/deletecart_details/{$id}');
-      var response = await _dio.delete(
-        BASE_URL + '/api/deletecart_details/{$id}',
+      var response = await _dio.get(
+        BASE_URL + '/api/delete-cart-item/$id',
         options: options,
       );
       print(response);
@@ -170,7 +173,7 @@ class ApiServices {
       }
     } catch (e) {
       print(e);
-      throw Exception(e);
+      return false;
     }
   }
 
@@ -269,10 +272,8 @@ class ApiServices {
     required String message,
   }) async {
     try {
-      final dio = Dio();
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token');
-      //final token = "25|XmCFyy4y5EymY45BkDkfyz6L4w4qDK2btCWYclLX";
 
       final options = BaseOptions(
         baseUrl: Rating, // Replace with your API base URL
@@ -292,7 +293,7 @@ class ApiServices {
       };
 
       final response = await dioInstance.post(
-        MAKE_ORDER, // Replace with your specific endpoint
+        Rating, // Replace with your specific endpoint
         data: requestBody,
       );
 

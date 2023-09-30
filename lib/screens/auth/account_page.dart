@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:food/screens/auth/sign_in_page.dart';
 import 'package:get/get.dart';
@@ -36,16 +38,22 @@ class _AccountPageState extends State<AccountPage> {
   @override
   void initState() {
     super.initState();
+    _loadSelectedImagePath();
     getData();
   }
 
+  String? _selectedImagePath;
   Future<void> _pickImageFromGallery() async {
     try {
       final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
 
       if (pickedFile != null) {
-        // You can handle the selected image here, e.g., display it or upload it.
-        // pickedFile.path will contain the path to the selected image file.
+        final prefs = await SharedPreferences.getInstance();
+
+        setState(() {
+          _selectedImagePath = pickedFile.path; // Set the selected image path.
+        });
+        await prefs.setString('selectedImagePath', _selectedImagePath!);
       } else {
         // User canceled the image selection
       }
@@ -53,6 +61,13 @@ class _AccountPageState extends State<AccountPage> {
       // Handle any exceptions that might occur during image picking.
       print('Error picking image: $e');
     }
+  }
+
+  Future<void> _loadSelectedImagePath() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _selectedImagePath = prefs.getString('selectedImagePath');
+    });
   }
 
   @override
@@ -77,18 +92,18 @@ class _AccountPageState extends State<AccountPage> {
       child: Column(
         children: [
           //profile
-          GestureDetector(
-            onTap: () {
-              _pickImageFromGallery();
-            },
-            child: AppIcon(
-              icon: Icons.person,
-              backgroundColor: AppColors.mainColor,
-              iconColor: Colors.white,
-              iconSize: Dimensions.height45 + Dimensions.height30,
-              size: Dimensions.height15 * 10,
-            ),
-          ),
+          // GestureDetector(
+          //   onTap: () {
+          //     _pickImageFromGallery();
+          //   },
+          //   child: AppIcon(
+          //     icon: Icons.person,
+          //     backgroundColor: AppColors.mainColor,
+          //     iconColor: Colors.white,
+          //     iconSize: Dimensions.height45 + Dimensions.height30,
+          //     size: Dimensions.height15 * 10,
+          //   ),
+          // ),
           SizedBox(
             height: Dimensions.height30,
           ),
@@ -97,6 +112,24 @@ class _AccountPageState extends State<AccountPage> {
               child: Column(
                 children: [
                   //name
+                  GestureDetector(
+                    onTap: () {
+                      _pickImageFromGallery();
+                    },
+                    child: CircleAvatar(
+                      radius: 90,
+                      backgroundImage: _selectedImagePath != null
+                          ? FileImage(File(_selectedImagePath!))
+                          : null,
+                      child: _selectedImagePath == null
+                          ? Icon(
+                              Icons.person,
+                              size: 180,
+                              color: Colors.white,
+                            )
+                          : null,
+                    ),
+                  ),
                   AccountWidget(
                     appIcon: AppIcon(
                       icon: Icons.person,

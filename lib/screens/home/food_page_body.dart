@@ -192,8 +192,8 @@ class _FoodPageBodyState extends State<FoodPageBody> {
                                         //   iconColor: AppColors.mainColor,
                                         // ),
                                         IconAndTextWidget(
-                                          icon: Icons.access_time_rounded,
-                                          text: "30min",
+                                          icon: Icons.monetization_on,
+                                          text: state.products[index].price,
                                           iconColor: AppColors.iconColor2,
                                         ),
                                       ],
@@ -304,7 +304,10 @@ class _FoodPageBodyState extends State<FoodPageBody> {
                   left: 15,
                   right: 15,
                 ),
-                child: AppColumn(text: product.name!),
+                child: AppColumn(
+                  text: product.name!,
+                  price: product.price,
+                ),
               ),
             ),
           ),

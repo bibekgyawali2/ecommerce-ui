@@ -37,6 +37,7 @@ class _PopularFoodDetailState extends State<PopularFoodDetail> {
       quantityController.text = totalItems.toString();
     }
 
+    bool isloading = false;
     void increaseQuantity() {
       if (totalItems < 10) {
         totalItems++;
@@ -128,7 +129,10 @@ class _PopularFoodDetailState extends State<PopularFoodDetail> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AppColumn(text: widget.products.name!),
+                  AppColumn(
+                    text: widget.products.name!,
+                    price: widget.products.price,
+                  ),
                   SizedBox(height: Dimensions.height20),
                   BigText(text: "Introduce"),
                   SizedBox(height: Dimensions.height20),
@@ -140,24 +144,25 @@ class _PopularFoodDetailState extends State<PopularFoodDetail> {
                   ),
                   RatingBar.builder(
                     itemSize: 20,
-                    initialRating:
-                        0, // Initial rating value, set to 0 initially
+                    initialRating: widget.products.stars
+                        .toDouble(), // Initial rating value, set to 0 initially
                     minRating: 1, // Minimum rating
                     direction: Axis.horizontal,
                     allowHalfRating:
                         true, // Set to true if you want to allow half-star ratings
                     itemCount: 5, // The number of stars
-                    itemPadding: EdgeInsets.symmetric(
+                    itemPadding: const EdgeInsets.symmetric(
                         horizontal: 4.0), // Padding between stars
-                    itemBuilder: (context, _) => Icon(
+                    itemBuilder: (context, _) => const Icon(
                       Icons.star,
                       color: Colors.amber, // Star color when filled
                     ),
                     onRatingUpdate: (rating) {
                       ApiServices().rating(
-                          rating: rating,
-                          productid: widget.products.id,
-                          message: "true");
+                        rating: rating,
+                        productid: widget.products.id,
+                        message: "true",
+                      );
                     },
                   )
                 ],
@@ -201,7 +206,7 @@ class _PopularFoodDetailState extends State<PopularFoodDetail> {
 
                       print(totalItems);
                     },
-                    child: Icon(
+                    child: const Icon(
                       Icons.remove,
                       color: AppColors.signColor,
                     ),
@@ -212,7 +217,8 @@ class _PopularFoodDetailState extends State<PopularFoodDetail> {
                     alignment: Alignment.center,
                     child: TextField(
                       decoration: InputDecoration(
-                        contentPadding: EdgeInsets.symmetric(vertical: 8.0),
+                        contentPadding:
+                            const EdgeInsets.symmetric(vertical: 8.0),
                         border: OutlineInputBorder(
                           borderSide: BorderSide.none,
                           borderRadius: BorderRadius.circular(8.0),
@@ -222,16 +228,15 @@ class _PopularFoodDetailState extends State<PopularFoodDetail> {
                       keyboardType: TextInputType.number,
                       textAlign: TextAlign.center,
                       readOnly: true,
-                      style: TextStyle(fontSize: 20),
+                      style: const TextStyle(fontSize: 20),
                     ),
                   ),
                   SizedBox(width: Dimensions.width10 / 2),
                   GestureDetector(
                     onTap: () {
                       increaseQuantity();
-                      print(totalItems);
                     },
-                    child: Icon(
+                    child: const Icon(
                       Icons.add,
                       color: AppColors.signColor,
                     ),
@@ -241,25 +246,43 @@ class _PopularFoodDetailState extends State<PopularFoodDetail> {
             ),
             GestureDetector(
               onTap: () async {
-                //   addItem(product);
-                bool success =
-                    await ApiServices().addToCart(widget.products, totalItems);
+                if (!isloading) {
+                  setState(() {
+                    isloading = true;
+                  });
+                  try {
+                    bool success = await ApiServices()
+                        .addToCart(widget.products, totalItems);
+
+                    if (success) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          behavior: SnackBarBehavior.floating,
+                          content: Text("Added to Cart"),
+                          duration: Duration(seconds: 1)));
+                    }
+                  } catch (e) {
+                  } finally {
+                    setState(() {
+                      isloading = false;
+                    });
+                  }
+                }
               },
               child: Container(
-                padding: EdgeInsets.only(
-                    top: Dimensions.height20,
-                    bottom: Dimensions.height20,
-                    left: Dimensions.width20,
-                    right: Dimensions.width20),
-                child: BigText(
-                  text: "\RS ${widget.products.price} | Add to cart",
-                  color: Colors.white,
-                  size: 15,
-                ),
+                padding: EdgeInsets.all(Dimensions.width20),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(Dimensions.radius20),
                   color: AppColors.mainColor,
                 ),
+                child: isloading == true
+                    ? Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : BigText(
+                        text: "\RS ${widget.products.price} | Add to cart",
+                        color: Colors.white,
+                        size: 15,
+                      ),
               ),
             )
           ],
