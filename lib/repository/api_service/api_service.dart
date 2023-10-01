@@ -7,7 +7,8 @@ import 'package:http/http.dart' as http;
 
 import '../../modals/order.dart';
 
-String BASE_URL = 'https://a35d-27-34-17-111.ngrok-free.app';
+String BASE_URL =
+    'https://d645-2400-1a00-bd20-6d5d-4d5b-dd40-7c3a-e214.ngrok-free.app';
 
 String IMAGE_URL = BASE_URL + '/images/products/';
 String PopularProduct = BASE_URL + '/api/viewproducts_details';
@@ -176,7 +177,7 @@ class ApiServices {
     }
   }
 
-  Future<bool> addToCart(ProductsModel item, int quantity) async {
+  Future<bool> addToCart(ProductsModel item, int quantity, String name) async {
     try {
       final options = Options(headers: {
         'accept': 'application/json',
@@ -184,10 +185,9 @@ class ApiServices {
         "ngrok-skip-browser-warning": "69420",
       });
       final Map<String, dynamic> requestBody = {
-        "name": "name",
+        "name": name,
         "price": item.price!,
-        "img":
-            'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=880&q=80',
+        "img": item.img,
         "quantity": 1,
         "isExist": 'true',
         "product": item.name,
@@ -222,7 +222,6 @@ class ApiServices {
       final dio = Dio();
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token');
-      //final token = "25|XmCFyy4y5EymY45BkDkfyz6L4w4qDK2btCWYclLX";
 
       final options = BaseOptions(
         baseUrl: MAKE_ORDER, // Replace with your API base URL

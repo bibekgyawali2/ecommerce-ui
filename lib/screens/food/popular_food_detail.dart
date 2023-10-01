@@ -3,6 +3,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:food/modals/product_modals.dart';
 import 'package:food/repository/api_service/api_service.dart';
 import 'package:food/screens/cart/cart_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../utils/colors.dart';
 import '../../utils/dimensions.dart';
@@ -13,11 +14,12 @@ import '../../widget/expandable_text_widget.dart';
 
 class PopularFoodDetail extends StatefulWidget {
   final ProductsModel products;
-  //final String page;
+  final String name;
 
   const PopularFoodDetail({
     Key? key,
     required this.products,
+    required this.name,
   }) : super(key: key);
 
   @override
@@ -246,26 +248,16 @@ class _PopularFoodDetailState extends State<PopularFoodDetail> {
             ),
             GestureDetector(
               onTap: () async {
-                if (!isloading) {
-                  setState(() {
-                    isloading = true;
-                  });
-                  try {
-                    bool success = await ApiServices()
-                        .addToCart(widget.products, totalItems);
-
-                    if (success) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                          behavior: SnackBarBehavior.floating,
-                          content: Text("Added to Cart"),
-                          duration: Duration(seconds: 1)));
-                    }
-                  } catch (e) {
-                  } finally {
-                    setState(() {
-                      isloading = false;
-                    });
-                  }
+                bool success = await ApiServices().addToCart(
+                  widget.products,
+                  totalItems,
+                  widget.name,
+                );
+                if (success) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      behavior: SnackBarBehavior.floating,
+                      content: Text("Added to Cart"),
+                      duration: Duration(seconds: 1)));
                 }
               },
               child: Container(

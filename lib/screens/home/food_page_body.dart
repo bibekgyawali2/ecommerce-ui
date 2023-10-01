@@ -7,6 +7,7 @@ import 'package:food/modals/product_modals.dart';
 import 'package:food/repository/api_service/api_service.dart';
 import 'package:food/screens/food/popular_food_detail.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../cubits/product_cubit/products_state.dart';
 import '../../modals/order.dart';
 import '../../utils/colors.dart';
@@ -36,6 +37,15 @@ class _FoodPageBodyState extends State<FoodPageBody> {
       setState(() {
         _currPageValue = pageController.page!;
       });
+    });
+    getData();
+  }
+
+  String? Name;
+  void getData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() async {
+      Name = await prefs.getString('name');
     });
   }
 
@@ -122,7 +132,9 @@ class _FoodPageBodyState extends State<FoodPageBody> {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => PopularFoodDetail(
-                              products: state.products[index]),
+                            products: state.products[index],
+                            name: Name!,
+                          ),
                         ),
                       );
                     },
@@ -254,7 +266,10 @@ class _FoodPageBodyState extends State<FoodPageBody> {
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => PopularFoodDetail(products: product),
+                  builder: (context) => PopularFoodDetail(
+                    products: product,
+                    name: Name!,
+                  ),
                 ),
               );
             },
