@@ -30,6 +30,11 @@ class _CartPageState extends State<CartPage> {
     return total;
   }
 
+  void initState() {
+    super.initState();
+    getData();
+  }
+
   String? name;
   void getData() async {
     final prefs = await SharedPreferences.getInstance();
@@ -55,6 +60,8 @@ class _CartPageState extends State<CartPage> {
         child: BlocBuilder<CartCubit, CartState>(
           builder: (context, state) {
             if (state is CartFetched) {
+              var jew = (state.cart.where((element) => element.name == name))
+                  .toList();
               return SafeArea(
                 child: Stack(
                   children: [
@@ -69,8 +76,8 @@ class _CartPageState extends State<CartPage> {
                           context: context,
                           removeTop: true,
                           child: ListView.builder(
-                            itemCount: state.cart
-                                .length, // Replace with the desired number of items
+                            itemCount: jew.length,
+                            // Replace with the desired number of items
                             itemBuilder: (_, index) {
                               return Container(
                                 width: double.maxFinite,
@@ -90,8 +97,7 @@ class _CartPageState extends State<CartPage> {
                                           image: DecorationImage(
                                             fit: BoxFit.cover,
                                             image: NetworkImage(
-                                              IMAGE_URL +
-                                                  state.cart[index].img!,
+                                              IMAGE_URL + jew[index].img!,
                                             ),
                                           ),
                                           borderRadius: BorderRadius.circular(
@@ -113,7 +119,7 @@ class _CartPageState extends State<CartPage> {
                                               MainAxisAlignment.spaceEvenly,
                                           children: [
                                             BigText(
-                                              text: state.cart[index]
+                                              text: jew[index]
                                                   .product!, // Replace with dynamic text
                                               color: Colors.black54,
                                             ),
@@ -124,7 +130,7 @@ class _CartPageState extends State<CartPage> {
                                                       .spaceBetween,
                                               children: [
                                                 BigText(
-                                                  text: state.cart[index]
+                                                  text: jew[index]
                                                       .price!, // Replace with dynamic price
                                                   color: Colors.redAccent,
                                                 ),
@@ -147,9 +153,9 @@ class _CartPageState extends State<CartPage> {
                                                       IconButton(
                                                           onPressed: () async {
                                                             await ApiServices()
-                                                                .delete_cart(state
-                                                                    .cart[index]
-                                                                    .id!);
+                                                                .delete_cart(
+                                                                    jew[index]
+                                                                        .id!);
                                                             BlocProvider.of<
                                                                         CartCubit>(
                                                                     context)
@@ -211,7 +217,7 @@ class _CartPageState extends State<CartPage> {
                               ),
                               BigText(
                                 text:
-                                    "\RS ${calculateTotalPrice(state.cart).toStringAsFixed(2)}", // Replace with dynamic total amount
+                                    "\RS ${calculateTotalPrice(jew).toStringAsFixed(2)}", // Replace with dynamic total amount
                               ),
                               SizedBox(
                                 width: Dimensions.width10 / 2,
