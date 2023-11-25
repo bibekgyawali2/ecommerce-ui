@@ -21,6 +21,7 @@ class _CartHistoryState extends State<CartHistory> {
   @override
   void initState() {
     super.initState();
+    BlocProvider.of<OrderCubit>(context).fetchOrders();
     // Trigger the initial refresh when the widget is first built
     Future.microtask(() {
       _refreshIndicatorKey.currentState?.show();

@@ -8,11 +8,11 @@ import 'package:http/http.dart' as http;
 import '../../modals/order.dart';
 
 String BASE_URL =
-    'https://d645-2400-1a00-bd20-6d5d-4d5b-dd40-7c3a-e214.ngrok-free.app';
+    'https://fb8c-2400-1a00-bd20-9054-e118-2438-35ab-c05d.ngrok-free.app';
 
 String IMAGE_URL = BASE_URL + '/images/products/';
 String PopularProduct = BASE_URL + '/api/viewproducts_details';
-String AddToCart = BASE_URL + '/api/addcart_details';
+String AddToCart = BASE_URL + '/api/add-user-cart-item';
 String deleteCart = BASE_URL + '/api/deletecart_details';
 String MAKE_ORDER = BASE_URL + '/api/create-order';
 String sign_in = BASE_URL + '/api/login';
@@ -179,12 +179,15 @@ class ApiServices {
 
   Future<bool> addToCart(ProductsModel item, int quantity, String name) async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
       final options = Options(headers: {
         'accept': 'application/json',
-        // Add your headers here
+        "Authorization": "Bearer $token",
         "ngrok-skip-browser-warning": "69420",
       });
       final Map<String, dynamic> requestBody = {
+        "product_id": item.id,
         "name": name,
         "price": item.price!,
         "img": item.img,
@@ -194,15 +197,14 @@ class ApiServices {
         "time": 2.2,
         "id": item.id,
       };
+      print(requestBody);
       print(AddToCart);
       var response =
           await _dio.post(AddToCart, data: requestBody, options: options);
       print(response);
       if (response.statusCode == 200) {
-        // Successful sign-up
         return true;
       } else {
-        // Sign-up failed
         return false;
       }
     } catch (e) {
@@ -215,13 +217,14 @@ class ApiServices {
     required String name,
     required double price,
     required int quantity,
-    required List<int> product,
+    required String product,
     required DateTime time,
   }) async {
     try {
       final dio = Dio();
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token');
+      final userId = prefs.getString('id');
 
       final options = BaseOptions(
         baseUrl: MAKE_ORDER, // Replace with your API base URL
@@ -239,10 +242,11 @@ class ApiServices {
         "name": name,
         "price": price,
         "quantity": quantity,
-        "isExist": true, // Use boolean value instead of string 'true'
+        "isExist": "ok", // Use boolean value instead of string 'true'
         "product": product,
         "status": 1, // Modify as needed
-        "time": timeValue, // Convert DateTime to string
+        "time": timeValue,
+        "user_id": userId,
       };
 
       final response = await dioInstance.post(
@@ -336,14 +340,10 @@ class ApiServices {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
         await prefs.setString('name', a['user']['name']);
-        print(a['user']['name']);
-        print(a['user']['email']);
-        print(token);
+        await prefs.setString('id', a['user']['id']);
         await prefs.setString('email', a['user']['email']);
         return true;
       } else {
-        // Sign-in failed
-
         return false;
       }
     } catch (e) {

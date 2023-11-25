@@ -186,6 +186,8 @@ class _WalletPaymentState extends State<WalletPayment> {
               double price = 0.0;
               String img = "";
               int totalQuantity = 0;
+              String id = '';
+
               for (var item in cartItems) {
                 var a = item.id;
                 ids.add(a!);
@@ -198,11 +200,17 @@ class _WalletPaymentState extends State<WalletPayment> {
                 img = item.img ?? img;
               }
               name = name.isNotEmpty ? name.substring(0, name.length - 2) : "";
+              for (var idf in ids) {
+                id += idf.toString() + ",";
+              }
+              if (id.isNotEmpty) {
+                id = id.substring(0, id.length - 1);
+              }
               bool orderStatus = await ApiServices().addOrder(
                 name: Name!,
                 price: price,
                 quantity: totalQuantity,
-                product: ids,
+                product: id, // Convert list of ints to comma-separated string
                 time: DateTime.now(),
               );
               if (orderStatus) {
