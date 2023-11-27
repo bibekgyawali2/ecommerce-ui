@@ -8,11 +8,12 @@ import 'package:http/http.dart' as http;
 import '../../modals/order.dart';
 
 String BASE_URL =
-    'https://fb8c-2400-1a00-bd20-9054-e118-2438-35ab-c05d.ngrok-free.app';
+    'https://298e-2400-1a00-bd20-f28d-f1a8-8573-3211-2077.ngrok-free.app';
 
 String IMAGE_URL = BASE_URL + '/images/products/';
 String PopularProduct = BASE_URL + '/api/viewproducts_details';
 String AddToCart = BASE_URL + '/api/add-user-cart-item';
+String getCart = BASE_URL + '/api/get-user-cart-item';
 String deleteCart = BASE_URL + '/api/deletecart_details';
 String MAKE_ORDER = BASE_URL + '/api/create-order';
 String sign_in = BASE_URL + '/api/login';
@@ -224,7 +225,7 @@ class ApiServices {
       final dio = Dio();
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token');
-      final userId = prefs.getString('id');
+      final userId = prefs.getInt('id');
 
       final options = BaseOptions(
         baseUrl: MAKE_ORDER, // Replace with your API base URL
@@ -316,10 +317,8 @@ class ApiServices {
   Future<bool> login(String email, String password) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
       final headers = {
         'accept': 'application/json',
-        // "Authorization": "Bearer $token",
       };
       final requestBody = {
         "email": email,
@@ -340,7 +339,7 @@ class ApiServices {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
         await prefs.setString('name', a['user']['name']);
-        await prefs.setString('id', a['user']['id']);
+        await prefs.setInt('id', a['user']['id']);
         await prefs.setString('email', a['user']['email']);
         return true;
       } else {
@@ -353,20 +352,27 @@ class ApiServices {
     }
   }
 
-  fetchCart() async {
-    try {
-      // if (token == null) {
-      //   throw Exception("Token not found");
-      // }
+  Future<List<Cart>> fetchCart() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
+    try {
       final options = Options(headers: {
         "ngrok-skip-browser-warning": "69420",
         "accept": "application/json",
+        "Authorization": "Bearer $token",
       });
 
-      final response = await _dio.get(get_cart, options: options);
-      final list = List<Cart>.from(response.data.map((x) => Cart.fromMap(x)));
-      return list;
+      final response = await _dio.get(getCart, options: options);
+
+      // Access the 'data' key in the response
+      final List<dynamic> responseData = response.data['data'];
+
+      // Use the Cart.fromJson method to convert each item in the list
+      final List<Cart> cartList =
+          responseData.map((json) => Cart.fromJson(json)).toList();
+
+      return cartList;
     } catch (e) {
       print(e);
       throw Exception(e);
