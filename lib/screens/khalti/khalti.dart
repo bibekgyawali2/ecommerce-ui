@@ -189,7 +189,7 @@ class _WalletPaymentState extends State<WalletPayment> {
               String id = '';
 
               for (var item in cartItems) {
-                var a = item.id;
+                var a = item.product_id;
                 ids.add(a!);
                 name += item.product ?? ""; // Concatenate product name
                 double itemPrice = double.tryParse(item.price ?? "0") ?? 0;

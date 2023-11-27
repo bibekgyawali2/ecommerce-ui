@@ -7,6 +7,7 @@ class Cart {
   String? isExist;
   String? time;
   String? product;
+  int? product_id;
 
   Cart(
       {this.id,
@@ -16,6 +17,7 @@ class Cart {
       this.quantity,
       this.isExist,
       this.time,
+      this.product_id,
       this.product});
 
   Cart.fromJson(Map<String, dynamic> json) {
@@ -27,18 +29,19 @@ class Cart {
     isExist = json['isExist'];
     time = json['time'];
     product = json['product'];
+    product_id = json['product_id'];
   }
   factory Cart.fromMap(Map<String, dynamic> map) {
     return Cart(
-      id: map['id'],
-      name: map['name'],
-      price: map['price'],
-      img: map['img'],
-      quantity: map['quantity'],
-      isExist: map['isExist'],
-      time: map['time'],
-      product: map['product'],
-    );
+        id: map['id'],
+        name: map['name'],
+        price: map['price'],
+        img: map['img'],
+        quantity: map['quantity'],
+        isExist: map['isExist'],
+        time: map['time'],
+        product: map['product'],
+        product_id: map['product_id']);
   }
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
