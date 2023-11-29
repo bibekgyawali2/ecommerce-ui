@@ -91,9 +91,13 @@ class _CartHistoryState extends State<CartHistory> {
                           border: Border.all(color: AppColors.mainColor),
                         ),
                         child: SmallText(
-                            text:
-                                order.status == '0' ? 'approved' : 'delivered',
-                            color: AppColors.mainColor),
+                          text: order.status == '0'
+                              ? 'approved'
+                              : order.status == '3'
+                                  ? 'canceled'
+                                  : 'delivered',
+                          color: AppColors.mainColor,
+                        ),
                       ),
                     ),
                   );
