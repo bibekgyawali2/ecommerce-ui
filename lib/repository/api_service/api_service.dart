@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 import '../../modals/order.dart';
 
 String BASE_URL =
-    'https://298e-2400-1a00-bd20-f28d-f1a8-8573-3211-2077.ngrok-free.app';
+    'https://1db6-2400-1a00-bd20-757a-ed89-8bd8-b411-50d4.ngrok-free.app';
 
 String IMAGE_URL = BASE_URL + '/images/products/';
 String PopularProduct = BASE_URL + '/api/viewproducts_details';
@@ -213,6 +213,7 @@ class ApiServices {
       throw Exception(e);
     }
   }
+//malai userid feild nai patha baneko xa ani response ni s uccess airako xa backend ma order ni dekhairako xa
 
   Future<bool> addOrder({
     required String name,
@@ -245,10 +246,15 @@ class ApiServices {
         "quantity": quantity,
         "isExist": "ok", // Use boolean value instead of string 'true'
         "product": product,
-        "status": 1, // Modify as needed
+        "status": '0', // Modify as needed
         "time": timeValue,
         "user_id": userId,
+        "id": userId,
       };
+      // orderid ho ki k id ho teyo userid haldeko xa ta
+      // "id": userId,
+      // yo
+      // endpoint test nai nagari haldeko sab? code ma
 
       final response = await dioInstance.post(
         MAKE_ORDER, // Replace with your specific endpoint

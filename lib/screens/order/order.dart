@@ -67,7 +67,7 @@ class _CartHistoryState extends State<CartHistory> {
                         decoration: BoxDecoration(
                           borderRadius:
                               BorderRadius.circular(Dimensions.radius15),
-                          image: DecorationImage(
+                          image: const DecorationImage(
                             fit: BoxFit.cover,
                             image: NetworkImage(
                               'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=880&q=80',
@@ -75,7 +75,13 @@ class _CartHistoryState extends State<CartHistory> {
                           ),
                         ),
                       ),
-                      title: BigText(text: order.id.toString()),
+                      title: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          BigText(text: 'Order ID:'),
+                          BigText(text: order.id.toString()),
+                        ],
+                      ),
                       subtitle: SmallText(text: order.price),
                       trailing: Container(
                         padding: EdgeInsets.all(6),
@@ -85,7 +91,9 @@ class _CartHistoryState extends State<CartHistory> {
                           border: Border.all(color: AppColors.mainColor),
                         ),
                         child: SmallText(
-                            text: order.status, color: AppColors.mainColor),
+                            text:
+                                order.status == '0' ? 'approved' : 'delivered',
+                            color: AppColors.mainColor),
                       ),
                     ),
                   );
