@@ -94,8 +94,8 @@ class _CartHistoryState extends State<CartHistory> {
                           text: order.status == '0'
                               ? 'approved'
                               : order.status == '3'
-                                  ? 'canceled'
-                                  : 'delivered',
+                                  ? 'delivered'
+                                  : 'cancelled',
                           color: AppColors.mainColor,
                         ),
                       ),
