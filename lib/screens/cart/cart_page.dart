@@ -130,8 +130,10 @@ class _CartPageState extends State<CartPage> {
                                                       .spaceBetween,
                                               children: [
                                                 BigText(
-                                                  text: jew[index]
-                                                      .price!, // Replace with dynamic price
+                                                  text: (double.parse(jew[index]
+                                                              .price!) *
+                                                          jew[index].quantity!)
+                                                      .toString(),
                                                   color: Colors.redAccent,
                                                 ),
                                                 Container(
@@ -243,15 +245,15 @@ class _CartPageState extends State<CartPage> {
                 children: [
                   TextButton(
                     onPressed: () {},
-                    child: Text('RETRY'),
+                    child: const Text('RETRY'),
                   ),
-                  Center(
+                  const Center(
                     child: Text('Something Went Wrong'),
                   ),
                 ],
               );
             }
-            return SizedBox();
+            return const SizedBox();
           },
         ),
       ),

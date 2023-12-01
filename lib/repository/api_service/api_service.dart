@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 import '../../modals/order.dart';
 
 String BASE_URL =
-    'https://1db6-2400-1a00-bd20-757a-ed89-8bd8-b411-50d4.ngrok-free.app';
+    'https://9b94-2400-1a00-bd20-64c0-457b-6235-8d00-79dc.ngrok-free.app';
 
 String IMAGE_URL = BASE_URL + '/images/products/';
 String PopularProduct = BASE_URL + '/api/viewproducts_details';
@@ -178,7 +178,11 @@ class ApiServices {
     }
   }
 
-  Future<bool> addToCart(ProductsModel item, int quantity, String name) async {
+  Future<bool> addToCart(
+    ProductsModel item,
+    int quantity,
+    String name,
+  ) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token');
@@ -192,7 +196,7 @@ class ApiServices {
         "name": name,
         "price": item.price!,
         "img": item.img,
-        "quantity": 1,
+        "quantity": quantity,
         "isExist": 'true',
         "product": item.name,
         "time": 2.2,
